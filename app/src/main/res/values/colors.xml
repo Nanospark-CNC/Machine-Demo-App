@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="lubricant_text">#000000</color>
+
+    <color name="lubricant_high">@color/md_green_600</color>
+    <color name="lubricant_medium">@color/md_amber_500</color>
+    <color name="lubricant_low">@color/md_red_500</color>
+
+</resources>

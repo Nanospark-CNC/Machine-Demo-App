@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MachineMonitorDemo</string>
+
+    <string name="board_connected">Board Connected</string>
+    <string name="board_disconnected">Board Disconnected</string>
+    <string name="machine_monitor_active">Machine monitor active</string>
+    <string name="lubricant">Lubricant</string>
+    <string name="your_machine">Your Machine</string>
+
+</resources>
