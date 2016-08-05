@@ -4,9 +4,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.nanospark.machinemonitordemo.R;
 import com.nanospark.machinemonitordemo.util.LubricantHelper;
 
 /**
@@ -21,6 +23,7 @@ public class LubricantIndicator extends View {
 
     private float currentValue = 2.0f;
     private LubricantHelper lubricantHelper;
+    private int color;
 
     public LubricantIndicator(Context context) {
         super(context);
@@ -40,6 +43,7 @@ public class LubricantIndicator extends View {
     private void init(Context context) {
         paint = new Paint();
         lubricantHelper = LubricantHelper.getInstance(context);
+        color = ContextCompat.getColor(context, R.color.green);
     }
 
     public void setCurrentValue(float currentValue) {
@@ -47,10 +51,14 @@ public class LubricantIndicator extends View {
         invalidate();
     }
 
+    public void setColor(int color) {
+        this.color = color;
+    }
+
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(lubricantHelper.getColor(currentValue));
+        paint.setColor(color);
         float height = canvas.getHeight() - (canvas.getHeight() * (currentValue / (MAX_VALUE - MIN_VALUE)));
         canvas.drawRect(0, height, canvas.getWidth(), canvas.getHeight(), paint);
         paint.setColor(Color.BLACK);

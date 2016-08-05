@@ -3,8 +3,12 @@ package com.nanospark.machinemonitordemo;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -21,11 +25,6 @@ import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int VIDEO_MACHINE_RUNNING = 1;
-    private static final int VIDEO_MACHINE_SHUDDER_STOP = 2;
-    private static final int VIDEO_MACHINE_DOWN = 3;
-    private static final int VIDEO_MACHINE_ON_HOLD = 4;
-
     private boolean wasOn43;
     private boolean wasOn44;
     private boolean wasOn45;
@@ -39,7 +38,14 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.lubricant_label)
     TextView lubricantLabel;
 
+    @Bind(R.id.background)
+    ViewGroup background;
+
     private BoardStatus boardStatus;
+    private boolean videoStarted;
+
+    private Runnable lowLubricantRunnable;
+    private Handler delayedHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         boardStatus = BoardStatus.getInstance();
+        background.setBackgroundResource(R.color.amber);
     }
 
     @Override
@@ -59,7 +66,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // At startup we display the on hold video by default
-        playVideo(VIDEO_MACHINE_ON_HOLD);
+        String uriPath = "android.resource://com.nanospark.machinemonitordemo/raw/video1";
+        Uri uri = Uri.parse(uriPath);
+        videoView.setVideoURI(uri);
+
+        //Video Loop
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                videoView.start(); //need to make transition seamless.
+            }
+        });
+
+        videoView.start();
+
+        // Pause the video after a small delay so we give chance for the video to appear
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pauseVideo();
+            }
+        }, 500);
     }
 
     @Override
@@ -75,32 +101,12 @@ public class MainActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
     }
 
-    private void playVideo(int videoNumber) {
-        String uriPath = "android.resource://com.nanospark.machinemonitordemo/raw/video" + videoNumber;
-        Uri uri = Uri.parse(uriPath);
-
-        // The shudder/stop video should only play once and then go to the on hold video and start looping
-        if (videoNumber == VIDEO_MACHINE_SHUDDER_STOP) {
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    playVideo(VIDEO_MACHINE_DOWN);
-                }
-            });
-            videoView.setOnPreparedListener(null);
-        } else {
-
-            // All other videos will just loop
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.setLooping(true);
-                }
-            });
-        }
-
-        videoView.setVideoURI(uri);
+    private void playVideo() {
         videoView.start();
+    }
+
+    private void pauseVideo() {
+        videoView.pause();
     }
 
     /**
@@ -122,39 +128,66 @@ public class MainActivity extends AppCompatActivity {
         EventLogging.LogEvent(this, "*** 45 = " + isOn45);
         EventLogging.LogEvent(this, "*** 46 = " + voltage46);
 
+        int newBackgroundColor = 0;
 
         // We only care about 43 - 45 when the value changes (We only allow one change to be detected on each cycle)
         if (isOn45 != wasOn45) {
             if (isOn45) {
-                playVideo(VIDEO_MACHINE_RUNNING);
+                playVideo();
                 setDigitalOutput(1, true);
-            } else {
-                setDigitalOutput(1, false);
+                newBackgroundColor = ContextCompat.getColor(this, R.color.green);
             }
             wasOn45 = isOn45;
         } else if (isOn43 != wasOn43) {
             if (isOn43) {
-                playVideo(VIDEO_MACHINE_SHUDDER_STOP); // Play once then loop 3
+                pauseVideo();
                 setDigitalOutput(3, true);
-            } else {
-                setDigitalOutput(3, false);
+                newBackgroundColor = ContextCompat.getColor(this, R.color.red);
             }
             wasOn43 = isOn43;
         } else if (isOn44 != wasOn44) {
             if (isOn44) {
-                playVideo(VIDEO_MACHINE_ON_HOLD);
+                pauseVideo();
                 setDigitalOutput(2, true);
-            } else {
-                setDigitalOutput(2, false);
+                newBackgroundColor = ContextCompat.getColor(this, R.color.amber);
             }
             wasOn44 = isOn44;
         }
 
+        final boolean setLubricantColor;
         if (voltage46 < LubricantHelper.MEDIUM_THRESHOLD) {
-            setDigitalOutput(4, true);
+            setLubricantColor = false;
+            if (lowLubricantRunnable == null) {
+
+                // Make sure the lubricant is not green when we are below the threshold and waiting for the delay
+                runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                lubricantIndicator.setColor(ContextCompat.getColor(MainActivity.this, R.color.amber));
+                                lubricantLabel.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.amber));
+                            }
+                        });
+                lowLubricantRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        setDigitalOutput(4, true);
+                        lubricantIndicator.setColor(ContextCompat.getColor(MainActivity.this, R.color.red));
+                        lubricantLabel.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.red));
+                    }
+                };
+                delayedHandler.postDelayed(lowLubricantRunnable, 30000);
+            }
         } else {
+            setLubricantColor = true;
             setDigitalOutput(4, false);
+            if (lowLubricantRunnable != null) {
+                delayedHandler.removeCallbacks(lowLubricantRunnable);
+                lowLubricantRunnable = null;
+            }
         }
+
+        final int bgColor = newBackgroundColor;
 
         // Just update the data that we are displaying
         runOnUiThread(
@@ -162,7 +195,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         lubricantIndicator.setCurrentValue(voltage46);
-                        lubricantLabel.setTextColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
+                        if (setLubricantColor) {
+                            lubricantIndicator.setColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
+                            lubricantLabel.setTextColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
+                        }
+                        if (bgColor != 0) {
+                            background.setBackgroundColor(bgColor);
+                        }
                     }
                 });
     }

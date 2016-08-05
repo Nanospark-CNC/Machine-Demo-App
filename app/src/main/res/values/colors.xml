@@ -4,10 +4,17 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="your_machine_text">#3caab4</color>
     <color name="lubricant_text">#000000</color>
 
-    <color name="lubricant_high">@color/md_green_600</color>
-    <color name="lubricant_medium">@color/md_amber_500</color>
-    <color name="lubricant_low">@color/md_red_500</color>
+    <color name="green">#32960a</color>
+    <color name="red">#c80a0a</color>
+    <color name="amber">#f0960f</color>
+
+    <color name="lubricant_background">#AAEEEEEE
+    </color>
+    <color name="lubricant_high">@color/green</color>
+    <color name="lubricant_medium">@color/amber</color>
+    <color name="lubricant_low">@color/red</color>
 
 </resources>

@@ -135,6 +135,7 @@ public class BoardMonitorService extends IOIOService {
 
         private boolean digitalInputStates[] ;
         private float anlalogInputVoltage[];
+        boolean ledOn = false;
 
         @Override
         public void setup() throws ConnectionLostException {
@@ -180,27 +181,21 @@ public class BoardMonitorService extends IOIOService {
                     anlalogInputVoltage[inputIndex] = 0.0f;
                 }
 
-                // On each iteration we sample 10 times
-                for (int i=0; i < 10; i++) {
+                for (int inputIndex = 0; inputIndex < mInputsArray.length; inputIndex++) {
+                    IOIOInput input = mInputsArray[inputIndex];
+                    digitalInputStates[inputIndex] = digitalInputStates[inputIndex] | input.readIsOn();
+                    anlalogInputVoltage[inputIndex] = Math.max(anlalogInputVoltage[inputIndex], input.getCurrentVoltage());
+                }
 
-                    for (int inputIndex = 0; inputIndex < mInputsArray.length; inputIndex++) {
-                        IOIOInput input = mInputsArray[inputIndex];
-                        digitalInputStates[inputIndex] = digitalInputStates[inputIndex] | input.readIsOn();
-                        anlalogInputVoltage[inputIndex] = Math.max(anlalogInputVoltage[inputIndex], input.getCurrentVoltage());
-                    }
+                ledOn = !ledOn;
 
-                    // For the first iteration we sleep with the light on, so this gives us a brief blinking effect
-                    if (i == 0) {
-                        LED.write(false);
-                    } else if (i == 1) {
-                        LED.write(true);
-                    }
+                // For the first iteration we sleep with the light on, so this gives us a brief blinking effect
+                LED.write(ledOn);
 
-                    mNextDesiredTime += 100;
-                    timeToSleep = mNextDesiredTime - System.currentTimeMillis();
-                    if (timeToSleep > 0) {
-                        Thread.sleep(timeToSleep);
-                    }
+                mNextDesiredTime += 100;
+                timeToSleep = mNextDesiredTime - System.currentTimeMillis();
+                if (timeToSleep > 0) {
+                    Thread.sleep(timeToSleep);
                 }
 
                 // Read the inputs into our local array
