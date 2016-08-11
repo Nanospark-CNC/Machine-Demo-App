@@ -1,8 +1,8 @@
 package com.nanospark.machinemonitordemo;
 
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.nanospark.machinemonitordemo.events.InputUpdateEvent;
@@ -18,6 +19,8 @@ import com.nanospark.machinemonitordemo.ioio.BoardStatus;
 import com.nanospark.machinemonitordemo.logging.EventLogging;
 import com.nanospark.machinemonitordemo.ui.LubricantIndicator;
 import com.nanospark.machinemonitordemo.util.LubricantHelper;
+
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -65,19 +68,26 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        // At startup we display the on hold video by default
-        String uriPath = "android.resource://com.nanospark.machinemonitordemo/raw/video1";
-        Uri uri = Uri.parse(uriPath);
-        videoView.setVideoURI(uri);
 
-        //Video Loop
-        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer mp) {
-                videoView.start(); //need to make transition seamless.
-            }
-        });
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+        String fileName = "video1.mp4";
 
-        videoView.start();
+        File file = new File(path, fileName);
+
+        if (file.exists()) {
+            videoView.setVideoPath(file.getPath());
+
+            //Video Loop
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    videoView.start(); //need to make transition seamless.
+                }
+            });
+
+            videoView.start();
+        } else {
+            Toast.makeText(this, getString(R.string.cannot_find_video) + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        }
 
         // Pause the video after a small delay so we give chance for the video to appear
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

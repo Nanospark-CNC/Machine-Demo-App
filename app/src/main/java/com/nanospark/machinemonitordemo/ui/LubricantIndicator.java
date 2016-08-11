@@ -59,8 +59,8 @@ public class LubricantIndicator extends View {
         super.onDraw(canvas);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(color);
-        float height = canvas.getHeight() - (canvas.getHeight() * (currentValue / (MAX_VALUE - MIN_VALUE)));
-        canvas.drawRect(0, height, canvas.getWidth(), canvas.getHeight(), paint);
+        float width = canvas.getWidth() * (currentValue / (MAX_VALUE - MIN_VALUE));
+        canvas.drawRect(0, 0, width, canvas.getHeight(), paint);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(4f);

@@ -26,39 +26,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/your_machine"
-        android:textSize="30sp"
+        android:textSize="36dp"
         android:textColor="@color/your_machine_text"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginLeft="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_tiny"
+        android:layout_marginRight="@dimen/margin_small"
         android:shadowColor="@android:color/black"
+        android:layout_alignParentRight="true"
         android:shadowDy="2"
         android:shadowRadius="2"/>
 
     <FrameLayout
         android:id="@+id/lubricant_container"
-        android:layout_width="68dp"
-        android:layout_height="150dp"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
         android:background="@drawable/lubricant_border"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/title"
         android:layout_margin="@dimen/margin_small">
 
         <com.nanospark.machinemonitordemo.ui.LubricantIndicator
             android:id="@+id/lubricantIndicator"
             style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="20dp"
-            android:layout_height="match_parent"
+            android:layout_width="130dp"
+            android:layout_height="20dp"
             android:layout_gravity="right"
-            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginTop="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginRight="20dp"/>
+            android:layout_marginRight="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12dp"
             android:text="F"
-            android:layout_marginTop="@dimen/margin_medium"
+            android:layout_marginTop="30dp"
             android:layout_marginRight="8dp"
             android:layout_gravity="right"
             android:textColor="@color/md_black"/>
@@ -68,20 +69,19 @@
             android:layout_height="wrap_content"
             android:textSize="12dp"
             android:text="E"
-            android:layout_gravity="right|bottom"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:layout_marginRight="8dp"
+            android:layout_gravity="right"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="136dp"
             android:textColor="@color/md_black"/>
 
         <TextView
             android:id="@+id/lubricant_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|left"
+            android:layout_gravity="left"
             android:text="@string/lubricant"
             android:textSize="14dp"
-            android:rotation="270"
-            android:layout_marginLeft="-15dp"
+            android:layout_margin="@dimen/margin_small"
             android:textColor="@color/lubricant_text"
             android:shadowColor="@android:color/black"/>
 
