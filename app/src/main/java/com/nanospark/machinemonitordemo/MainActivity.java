@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 pauseVideo();
+                videoView.invalidate();
             }
         }, 500);
     }
@@ -164,32 +165,17 @@ public class MainActivity extends AppCompatActivity {
             wasOn44 = isOn44;
         }
 
-        final boolean setLubricantColor;
         if (voltage46 < LubricantHelper.MEDIUM_THRESHOLD) {
-            setLubricantColor = false;
             if (lowLubricantRunnable == null) {
-
-                // Make sure the lubricant is not green when we are below the threshold and waiting for the delay
-                runOnUiThread(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                lubricantIndicator.setColor(ContextCompat.getColor(MainActivity.this, R.color.amber));
-                                lubricantLabel.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.amber));
-                            }
-                        });
                 lowLubricantRunnable = new Runnable() {
                     @Override
                     public void run() {
                         setDigitalOutput(4, true);
-                        lubricantIndicator.setColor(ContextCompat.getColor(MainActivity.this, R.color.red));
-                        lubricantLabel.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.red));
                     }
                 };
-                delayedHandler.postDelayed(lowLubricantRunnable, 30000);
+                delayedHandler.postDelayed(lowLubricantRunnable, 10000);
             }
         } else {
-            setLubricantColor = true;
             setDigitalOutput(4, false);
             if (lowLubricantRunnable != null) {
                 delayedHandler.removeCallbacks(lowLubricantRunnable);
@@ -205,10 +191,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         lubricantIndicator.setCurrentValue(voltage46);
-                        if (setLubricantColor) {
-                            lubricantIndicator.setColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
-                            lubricantLabel.setTextColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
-                        }
+                        lubricantIndicator.setColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
+                        lubricantLabel.setTextColor(LubricantHelper.getInstance(MainActivity.this).getColor(voltage46));
+
                         if (bgColor != 0) {
                             background.setBackgroundColor(bgColor);
                         }

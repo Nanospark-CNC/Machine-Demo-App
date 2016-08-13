@@ -5,10 +5,10 @@
     android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/margin_medium"
+    android:paddingTop="@dimen/margin_medium"
+    android:paddingLeft="@dimen/margin_medium"
+    android:paddingRight="@dimen/margin_medium"
     tools:context="com.nanospark.machinemonitordemo.MainActivity"
     android:background="@android:color/black">
 
@@ -16,22 +16,23 @@
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"/>
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/your_machine"
-        android:textSize="36dp"
+        android:textSize="30dp"
         android:textColor="@color/your_machine_text"
-        android:layout_marginTop="@dimen/margin_tiny"
+        android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginRight="@dimen/margin_small"
         android:shadowColor="@android:color/black"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:shadowDy="2"
         android:shadowRadius="2"/>
 
@@ -41,7 +42,6 @@
         android:layout_height="50dp"
         android:background="@drawable/lubricant_border"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/title"
         android:layout_margin="@dimen/margin_small">
 
         <com.nanospark.machinemonitordemo.ui.LubricantIndicator
