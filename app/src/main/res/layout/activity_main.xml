@@ -21,28 +21,13 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"/>
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/your_machine"
-        android:textSize="30dp"
-        android:textColor="@color/your_machine_text"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginRight="@dimen/margin_small"
-        android:shadowColor="@android:color/black"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:shadowDy="2"
-        android:shadowRadius="2"/>
-
     <FrameLayout
         android:id="@+id/lubricant_container"
         android:layout_width="220dp"
         android:layout_height="50dp"
         android:background="@drawable/lubricant_border"
         android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/margin_small">
+        android:layout_margin="@dimen/margin_large">
 
         <com.nanospark.machinemonitordemo.ui.LubricantIndicator
             android:id="@+id/lubricantIndicator"
